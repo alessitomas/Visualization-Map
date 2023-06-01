@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
-import { MapContainer, TileLayer, useMap, Marker, Popup, Polyline } from 'react-leaflet'
+import { useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Polygon, Marker, Popup, Polyline } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
-
+import 'leaflet-kml';
+import toGeoJSON from 'togeojson'; // Import the toGeoJSON library
+import DOMParser from 'xmldom-alpha';
 
 function decodePolyline(encodedPolyline) {
     const decodedPolyline = polyline.decode(encodedPolyline);
@@ -11,6 +13,12 @@ function decodePolyline(encodedPolyline) {
 }
 
 const Map = () => {
+    return (
+      <MapContainerWrapper />
+    );
+};
+
+const MapContainerWrapper = () => {
 
     const center = [-23.513860, -46.597593]
 
@@ -20,28 +28,48 @@ const Map = () => {
     var encodedPolylineRed = "`esnCnki{G`QqCvGeA\\lCyHnALfA}C`BUDYA_@OkAeA{AiBcAoAEKwFz@{@HoD`@WDsAGeCo@y@Y_B}@a@_@Wa@Qg@gByKUaAMM_DyRUmCE}A?cA@}ANmDZ_GDgCGgCO{Aw@iEi@aCs@gCiAsC{EoKk@aB_@}Ag@yCQkBK}B?eCH}EDaA@wBImBQkBc@wBm@kBoAmC}@qAkAoAuAiAeAq@{Aq@YKcBe@iBYmBMsBAkAH}P|BwAJiA@{@DwC?yCSuDe@kD{@}Ak@s@[}@i@s@g@u@o@aA_Aa@g@mAiB}@gB}@aCk@wBYiBYkDs@iMa@wESeBg@aCw@iC]_AeAwB_BmC{AqBcBgBgf@ee@{@aAk@s@o@cAaAwBm@mBa@eBYcCOaCEuC[oj@K_CUyB]gBiE}P_Lkc@y@oC}@cCqAwC_AcBoB{CkB_CaAeAqAoAeBuAsCoBsQcL{Au@?QGIsEaDsEyCeI"
     const polylineRed = decodePolyline(encodedPolylineRed);
 
-    const polylineList = [];
+    const mapRef = useRef(null);
 
-    axios.get('http://127.0.0.1:5000/rota')
-   .then(function (response) {
-        const parsedResponse = JSON.parse(response);
-    });
-
-    i = 0;
-    for (const path in parsedResponse) {
-        polylineList[i] = decodePolyline(path.encodedRoutes);
-        i++;
-    }
-
+    useEffect(() => {
+        const mapRef = useRef(null);  
+        if (mapRef.current) {
+            // Load the KML file
+            fetch('LL_WGS84_KMZ_distrito.kml')
+            .then((response) => response.text())
+            .then((kml) => {
+              const domParser = new DOMParser.DOMParser();
+              const xmlDoc = domParser.parseFromString(kml, 'text/xml');
+              const geojson = toGeoJSON.kml(xmlDoc);
+    
+              console.log('GeoJSON data:', geojson);
+    
+              // Add each feature (polygon) to the map
+              geojson.features.forEach((feature) => {
+                if (feature.geometry.type === 'Polygon') {
+                  console.log('Polygon coordinates:', feature.geometry.coordinates);
+                  L.geoJSON(feature).addTo(mapRef.current);
+                }
+              });
+    
+              mapRef.current.fitBounds(L.geoJSON(geojson).getBounds());
+            });
+        }
+      }, []);
 
   return (
     <>
-          <MapContainer center={center} zoom={13} scrollWheelZoom={true}>
-            <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Polyline pathOptions={ { color: 'blue' } } positions={ polylineList } />
+          <MapContainer
+                whenCreated={(mapInstance) => {
+                    mapRef.current = mapInstance;
+                }}
+                id="map" 
+                center={center} 
+                zoom={13} 
+                scrollWheelZoom={true}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <Polygon pathOptions={{ fillColor: 'blue', fillOpacity: 0.5 }} positions={[]} /> {/* Placeholder polygon */}
+            <Polyline pathOptions={ { color: 'blue' } } positions={ polylineBlue } />
+            <Polyline pathOptions={ { color: 'red' } } positions={ polylineRed } />
         </MapContainer>
     </>
   );
