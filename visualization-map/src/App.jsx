@@ -6,6 +6,7 @@ import MapPage from './pages/MapPage/MapPage'
 function App() {
   return (
     <>
+      <h1> App </h1>
       <MapPage/>
     </>
   )
