@@ -20,6 +20,19 @@ const Map = () => {
     var encodedPolylineRed = "`esnCnki{G`QqCvGeA\\lCyHnALfA}C`BUDYA_@OkAeA{AiBcAoAEKwFz@{@HoD`@WDsAGeCo@y@Y_B}@a@_@Wa@Qg@gByKUaAMM_DyRUmCE}A?cA@}ANmDZ_GDgCGgCO{Aw@iEi@aCs@gCiAsC{EoKk@aB_@}Ag@yCQkBK}B?eCH}EDaA@wBImBQkBc@wBm@kBoAmC}@qAkAoAuAiAeAq@{Aq@YKcBe@iBYmBMsBAkAH}P|BwAJiA@{@DwC?yCSuDe@kD{@}Ak@s@[}@i@s@g@u@o@aA_Aa@g@mAiB}@gB}@aCk@wBYiBYkDs@iMa@wESeBg@aCw@iC]_AeAwB_BmC{AqBcBgBgf@ee@{@aAk@s@o@cAaAwBm@mBa@eBYcCOaCEuC[oj@K_CUyB]gBiE}P_Lkc@y@oC}@cCqAwC_AcBoB{CkB_CaAeAqAoAeBuAsCoBsQcL{Au@?QGIsEaDsEyCeI"
     const polylineRed = decodePolyline(encodedPolylineRed);
 
+    const polylineList = [];
+
+    axios.get('http://127.0.0.1:5000/rota')
+   .then(function (response) {
+        const parsedResponse = JSON.parse(response);
+    });
+
+    i = 0;
+    for (const path in parsedResponse) {
+        polylineList[i] = decodePolyline(path.encodedRoutes);
+        i++;
+    }
+
 
   return (
     <>
@@ -28,8 +41,7 @@ const Map = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Polyline pathOptions={ { color: 'blue' } } positions={ polylineBlue } />
-            <Polyline pathOptions={ { color: 'red' } } positions={ polylineRed } />
+            <Polyline pathOptions={ { color: 'blue' } } positions={ polylineList } />
         </MapContainer>
     </>
   );
