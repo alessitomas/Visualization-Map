@@ -13,12 +13,6 @@ function decodePolyline(encodedPolyline) {
 }
 
 const Map = () => {
-    return (
-      <MapContainerWrapper />
-    );
-};
-
-const MapContainerWrapper = () => {
 
     const center = [-23.513860, -46.597593]
 
@@ -31,37 +25,38 @@ const MapContainerWrapper = () => {
     const mapRef = useRef(null);
 
     useEffect(() => {
-        const mapRef = useRef(null);  
-        if (mapRef.current) {
-            // Load the KML file
-            fetch('LL_WGS84_KMZ_distrito.kml')
-            .then((response) => response.text())
-            .then((kml) => {
-              const domParser = new DOMParser.DOMParser();
-              const xmlDoc = domParser.parseFromString(kml, 'text/xml');
-              const geojson = toGeoJSON.kml(xmlDoc);
-    
-              console.log('GeoJSON data:', geojson);
-    
-              // Add each feature (polygon) to the map
-              geojson.features.forEach((feature) => {
-                if (feature.geometry.type === 'Polygon') {
-                  console.log('Polygon coordinates:', feature.geometry.coordinates);
-                  L.geoJSON(feature).addTo(mapRef.current);
-                }
-              });
-    
-              mapRef.current.fitBounds(L.geoJSON(geojson).getBounds());
-            });
-        }
-      }, []);
+      const map = mapRef.current;
+      console.log(map);
+  
+      if (map) {
+        // Load the KML file
+        fetch('LL_WGS84_KMZ_distrito.kml')
+          .then((response) => response.text())
+          .then((kml) => {
+            const domParser = new DOMParser.DOMParser();
+            const xmlDoc = domParser.parseFromString(kml, 'text/xml');
+            const geojson = toGeoJSON.kml(xmlDoc); // Convert KML to GeoJSON
+
+            console.log('GeoJSON data:', geojson);
+  
+            // Add each feature (polygon) to the map
+          geojson.features.forEach((feature) => {
+            if (feature.geometry.type === 'Polygon') {
+              console.log('Polygon coordinates:', feature.geometry.coordinates);
+              L.geoJSON(feature).addTo(map);
+            }
+          });
+
+          map.fitBounds(L.geoJSON(geojson).getBounds());
+        });
+  
+      }
+    }, []);
 
   return (
     <>
-          <MapContainer
-                whenCreated={(mapInstance) => {
-                    mapRef.current = mapInstance;
-                }}
+          <MapContainer whenCreated={(mapInstance) =>
+            {mapRef.current = mapInstance;}} 
                 id="map" 
                 center={center} 
                 zoom={13} 
