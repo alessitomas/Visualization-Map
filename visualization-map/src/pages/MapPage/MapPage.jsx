@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Polyline, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Popup, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 
 const MapPage = () => {
   const [poly, setPoly] = useState([]);
   const [popupInfo, setPopupInfo] = useState(null);
-
+  const [gon, setGon] = useState([]);
+  
   const decodePolyline = (encodedPolyline) => {
     const decodedPolyline = polyline.decode(encodedPolyline);
-    const points = decodedPolyline.map((point) => [point[0], point[1]]);
+    const points = decodedPolyline.map((point) => ({ lat: point[0], lng: point[1] }));
     return points;
   };
 
@@ -42,7 +43,24 @@ const MapPage = () => {
       }
     };
 
+    const fetchAreaData = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/areas');
+          const data = await response.json();
+            
+          const area_kml = data.areas.map((area) => { 
+            const positions = area.coords.map(coord => [coord[1], coord[0]]);
+            return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
+          });
+
+          setGon(area_kml);
+        } catch (error) {
+          console.error('Error fetching areas data:', error);
+        }
+      };
+
     fetchPolylineData();
+    fetchAreaData();
   }, []);
 
   const center = [-23.513860, -46.597593];
@@ -60,8 +78,9 @@ const MapPage = () => {
           <p>{popupInfo.data.duration}</p> 
         </Popup>
       )}
+      {gon}
     </MapContainer>
   );
-}
+};
 
 export default MapPage;
