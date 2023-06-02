@@ -35,9 +35,9 @@ const MapPage = () => {
           const response = await fetch('http://localhost:5000/areas');
           const data = await response.json();
             
-        //   how do i read this ??
           const area_kml = data.areas.map((area) => { 
-            return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={area.coords} />;
+            const positions = area.coords.map(coord => [coord[1], coord[0]]);
+            return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
           });
 
           setGon(area_kml);
