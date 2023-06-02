@@ -36,11 +36,11 @@ const MapPage = () => {
           const data = await response.json();
             
         //   how do i read this ??
-          const area = data.kml_areas.map((areas) => { 
+          const area_kml = data.areas.map((area) => { 
             return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={area.coords} />;
           });
 
-          setGon(area);
+          setGon(area_kml);
         } catch (error) {
           console.error('Error fetching areas data:', error);
         }
