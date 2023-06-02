@@ -1,9 +1,18 @@
 import './Landing.css';
 import imgBackground from "./assets/imagem/background.png"
 import icone from "./assets/imagem/icone.png"
+import { useNavigate } from 'react-router-dom';
+import React from 'react';
 
 
 function Landing() {    
+
+    const navigate = useNavigate();
+
+    function handleClick() {
+        navigate("/map");
+    }
+
   return (
     <div className="landing-page" style={{ backgroundImage: `url(${imgBackground})` }}>
       <header>
@@ -23,6 +32,7 @@ function Landing() {
       <button
       className="image-button"
       style={{ backgroundImage: `url(${icone})` }}
+      onClick={handleClick}
     ></button>
     </div>
 
