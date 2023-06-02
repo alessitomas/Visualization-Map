@@ -2,6 +2,7 @@ import './Landing.css';
 import imgBackground from "./assets/imagem/background.png"
 import icone from "./assets/imagem/icone.png"
 
+
 function Landing() {    
   return (
     <div className="landing-page" style={{ backgroundImage: `url(${imgBackground})` }}>
@@ -18,9 +19,6 @@ function Landing() {
         <main>
           <p>Uma ferramenta de análise origem-destino de profissionais da educação</p>
         </main>
-
-        
-        
       </header>
       <button
       className="image-button"
