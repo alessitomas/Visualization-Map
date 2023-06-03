@@ -43,24 +43,24 @@ const MapPage = () => {
       }
     };
 
-    const fetchAreaData = async () => {
-        try {
-          const response = await fetch('http://localhost:5000/areas');
-          const data = await response.json();
+    // const fetchAreaData = async () => {
+    //     try {
+    //       const response = await fetch('http://localhost:5000/areas');
+    //       const data = await response.json();
             
-          const area_kml = data.areas.map((area) => { 
-            const positions = area.coords.map(coord => [coord[1], coord[0]]);
-            return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
-          });
+    //       const area_kml = data.areas.map((area) => { 
+    //         const positions = area.coords.map(coord => [coord[1], coord[0]]);
+    //         return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
+    //       });
 
-          setGon(area_kml);
-        } catch (error) {
-          console.error('Error fetching areas data:', error);
-        }
-      };
+    //       setGon(area_kml);
+    //     } catch (error) {
+    //       console.error('Error fetching areas data:', error);
+    //     }
+    //   };
 
     fetchPolylineData();
-    fetchAreaData();
+    // fetchAreaData();
   }, []);
 
   const center = [-23.513860, -46.597593];
@@ -74,11 +74,11 @@ const MapPage = () => {
       {poly}
       {popupInfo && (
         <Popup position={popupInfo.position}>
-          <p>{popupInfo.data.distanceMeters} m</p>
-          <p>{popupInfo.data.duration}</p> 
+          Distancia: {popupInfo.data.distanceMeters} m <br />
+          Tempo: {popupInfo.data.duration}
         </Popup>
       )}
-      {gon}
+      {/* {gon} */}
     </MapContainer>
   );
 };
