@@ -74,8 +74,8 @@ const MapPage = () => {
       {poly}
       {popupInfo && (
         <Popup position={popupInfo.position}>
-          <p>{popupInfo.data.distanceMeters} m</p>
-          <p>{popupInfo.data.duration}</p> 
+          Distancia: {popupInfo.data.distanceMeters} m <br />
+          Tempo: {popupInfo.data.duration}
         </Popup>
       )}
       {gon}
