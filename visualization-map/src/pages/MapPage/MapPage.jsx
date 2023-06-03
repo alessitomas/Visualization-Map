@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Polyline, Popup, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Popup, Polygon, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 
@@ -7,6 +7,7 @@ const MapPage = () => {
   const [poly, setPoly] = useState([]);
   const [popupInfo, setPopupInfo] = useState(null);
   const [gon, setGon] = useState([]);
+  const [markers, setMarkers] = useState([]);
   
   const decodePolyline = (encodedPolyline) => {
     const decodedPolyline = polyline.decode(encodedPolyline);
@@ -36,8 +37,30 @@ const MapPage = () => {
           );
         });
 
-        setPoly(polylines);
+        const originMarkers = data.rotas.map((rota) => (
+          <Marker key={`origin-${rota.id}`} position={[rota.latitudeOrigem, rota.longitudeOrigem]}>
+            <Popup>
+              Origem<br />
+              Lat: {rota.latitudeOrigem}<br />
+              Lng: {rota.longitudeOrigem}<br />
+            </Popup>
+          </Marker>
+        ));
 
+        const destinationMarkers = data.rotas.map((rota) => (
+          <Marker key={`destination-${rota.id}`} position={[rota.latitudeDestino, rota.longitudeDestino]}>
+            <Popup>
+              Destino<br />
+              Lat: {rota.latitudeDestino}<br />
+              Lng: {rota.longitudeDestino}<br />
+            </Popup>
+          </Marker>
+        ));
+
+        const allMarkers = [...originMarkers, ...destinationMarkers];
+
+        setPoly(polylines);
+        setMarkers(allMarkers);
       } catch (error) {
         console.error('Error fetching polyline data:', error);
       }
@@ -79,6 +102,7 @@ const MapPage = () => {
         </Popup>
       )}
       {gon}
+      {markers}
     </MapContainer>
   );
 };
