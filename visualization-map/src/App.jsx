@@ -1,19 +1,18 @@
 import { useState } from 'react'
-
+import LandingPage from './Landing'
 import './App.css'
 import MapPage from './pages/MapPage/MapPage'
+import { Route, Routes } from 'react-router-dom'
 
 
 function App() {
   return (
-    <>
-      <div id="centralize">
-        <div id="title">
-          <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png"/> Mapa </h1>
-        </div>
-        <MapPage/>
-      </div>
-    </>
+    <div className='App'>
+      <Routes> 
+        <Route path="/" element={<LandingPage/>} />
+        <Route path="/map" element={<MapPage/>} />
+      </Routes>
+    </div>
   )
 }
 
