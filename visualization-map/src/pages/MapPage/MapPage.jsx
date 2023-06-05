@@ -112,7 +112,7 @@ const MapPage = () => {
 
   const polygons = useMemo(() => gon.map((area) => {
     const positions = area.coords.map(coord => [coord[1], coord[0]]);
-    return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
+    return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
   }), [gon]);
 
   return (
@@ -133,6 +133,7 @@ const MapPage = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          {polygons}
           {polylines}
           {popupInfo && (
             <Popup position={popupInfo.position}>
@@ -140,7 +141,6 @@ const MapPage = () => {
               Tempo: {popupInfo.data.duration}
             </Popup>
           )}
-          {polygons}
           {markersElements}
         </MapContainer>
       </div>
