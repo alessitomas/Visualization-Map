@@ -116,35 +116,44 @@ const MapPage = () => {
   }), [gon]);
 
   return (
-    <div id="centralize">
-      <div id="title">
-        <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png" /> Mapa </h1>
-        <select onChange={e => setTravelMode(e.target.value)}>
-          <option value="">All</option>
-          <option value="WALK">Walk</option>
-          <option value="DRIVE">Drive</option>
-          <option value="BICYCLE">Bicycle</option>
-        </select>
-      </div>
-      <div id="map">
-        <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
-          <MapEvents />
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {polygons}
-          {polylines}
-          {popupInfo && (
-            <Popup position={popupInfo.position}>
-              Distancia: {popupInfo.data.distanceMeters} m <br />
-              Tempo: {popupInfo.data.duration}
-            </Popup>
-          )}
-          {markersElements}
-        </MapContainer>
-      </div>
+    <>
+    <div id="row">
+        <div id="selectors">
+            <select onChange={e => setTravelMode(e.target.value)} id="dropdown">
+                <option value="">All</option>
+                <option value="WALK">Walk</option>
+                <option value="DRIVE">Drive</option>
+                <option value="BICYCLE">Bicycle</option>
+            </select>
+            <select id="dropdown"><option value=""> T B D </option></select>
+            <select id="dropdown"><option value=""> T B D </option></select>
+            <select id="dropdown"><option value=""> T B D </option></select>
+        </div>
+        <div id="centralize">
+            <div id="title">
+                <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png" /> Mapa </h1>
+            </div>
+            <div id="map">
+                <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
+                <MapEvents />
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+                {polygons}
+                {polylines}
+                {popupInfo && (
+                    <Popup position={popupInfo.position}>
+                    Distancia: {popupInfo.data.distanceMeters} m <br />
+                    Tempo: {popupInfo.data.duration}
+                    </Popup>
+                )}
+                {markersElements}
+                </MapContainer>
+            </div>
+        </div>
     </div>
+    </>
   );
 };
 
