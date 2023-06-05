@@ -1,9 +1,7 @@
 
 import React from 'react';
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
-
 
 
 const SliderFilters = ({ duration, distance, updateDuration, updateDistance }) => {
@@ -15,7 +13,8 @@ const SliderFilters = ({ duration, distance, updateDuration, updateDistance }) =
         value={duration}
         onChange={updateDuration}
         valueLabelDisplay="auto"
-
+        min={0}
+        max={5000}
         disableSwap
       />
       <Slider
@@ -23,7 +22,8 @@ const SliderFilters = ({ duration, distance, updateDuration, updateDistance }) =
         value={distance}
         onChange={updateDistance}
         valueLabelDisplay="auto"
-
+        min={0}
+        max={50000}      
         disableSwap
       />
     </Box>

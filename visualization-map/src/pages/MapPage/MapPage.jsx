@@ -19,9 +19,9 @@ const MapPage = () => {
   const [travelMode, setTravelMode] = useState(null);
   const mapRef = useRef();
 
-  const minDistance = 10;
-  const minDuration = 10;
-  const UpdateDuration = (event, newValue, activeThumb) => {
+  const minDistance = 2;
+  const minDuration = 2;
+  const updateDuration = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -38,7 +38,7 @@ const MapPage = () => {
       setDuration(newValue);
     }
   };
-  const UpdateDistance = (event, newValue, activeThumb) => {
+  const updateDistance = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -156,7 +156,7 @@ const MapPage = () => {
     const positions = area.coords.map(coord => [coord[1], coord[0]]);
     return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
   }), [gon]);
-
+  
   return (
     <>
     <div id="row">
@@ -185,7 +185,7 @@ const MapPage = () => {
                 {polygons}
                 {polylines}
                 {popupInfo && (
-                    <Popup position={popupInfo.position}>
+                  <Popup position={popupInfo.position}>
                     Distancia: {popupInfo.data.distanceMeters} m <br />
                     Tempo: {popupInfo.data.duration}
                     </Popup>
@@ -193,6 +193,7 @@ const MapPage = () => {
                 {markersElements}
                 </MapContainer>
             </div>
+              <SliderFilters duration = {duration} distance={distance} updateDuration={updateDuration} updateDistance={updateDistance}/>
         </div>
     </div>
     </>
