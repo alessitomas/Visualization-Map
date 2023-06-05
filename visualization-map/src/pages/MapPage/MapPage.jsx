@@ -120,7 +120,7 @@ const MapPage = () => {
 
     var seed = rota.id + 2;
     var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
-    var distColor = `rgb(${255},${255-Math.floor(rota.distanceMeters/200)},${255-Math.floor(rota.distanceMeters/200)})`; 
+    var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
 
     return (
       <Polyline 
