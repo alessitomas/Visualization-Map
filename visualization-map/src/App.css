@@ -40,6 +40,8 @@
     justify-content: space-evenly;
 }
 
+/* --------------------------------------- */
+
 #dropdown {
     display: block;
     height: 2rem;
@@ -95,4 +97,14 @@
 #dropdown:hover > #dropdown:after {
     border-bottom-width: 5px;
     transition: 0.2s 0.2s border-bottom-width ease-out;
+}
+
+/* --------------------------------------- */
+
+#slider {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
 }

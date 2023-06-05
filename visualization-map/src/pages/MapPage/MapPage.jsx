@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -120,11 +119,13 @@ const MapPage = () => {
     const polylineData = decodePolyline(rota.encodedRoutes);
 
     var seed = rota.id + 2;
+    var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
+    var distColor = `rgb(${255},${255-Math.floor(rota.distanceMeters/200)},${255-Math.floor(rota.distanceMeters/200)})`; 
 
     return (
       <Polyline 
         key={rota.id} map
-        pathOptions={{ color: `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})` }} 
+        pathOptions={{ color: distColor }} 
         positions={polylineData} 
         eventHandlers={{
           click: (e) => {
@@ -168,8 +169,9 @@ const MapPage = () => {
                 <option value="BICYCLE">Bicycle</option>
             </select>
             <select id="dropdown"><option value=""> T B D </option></select>
-            <select id="dropdown"><option value=""> T B D </option></select>
-            <select id="dropdown"><option value=""> T B D </option></select>
+            <div id="slider">
+              <SliderFilters duration = {duration} distance={distance}  UpdateDuration={UpdateDuration} UpdateDistance={UpdateDistance} />
+            </div>
         </div>
         <div id="centralize">
             <div id="title">
