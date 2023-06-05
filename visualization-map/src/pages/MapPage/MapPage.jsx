@@ -69,12 +69,20 @@ const MapPage = () => {
     fetchAreaData();
   }, [mapCenter, mapZoom]);
 
+  function random(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+    }
+
   const polylines = useMemo(() => poly.map((rota) => {
     const polylineData = decodePolyline(rota.encodedRoutes);
+
+    var seed = rota.id + 2;
+    
     return (
       <Polyline 
         key={rota.id} map
-        pathOptions={{ color: `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})` }} 
+        pathOptions={{ color: `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})` }} 
         positions={polylineData} 
         eventHandlers={{
           click: (e) => {
