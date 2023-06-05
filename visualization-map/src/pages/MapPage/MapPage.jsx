@@ -13,9 +13,45 @@ const MapPage = () => {
   const [mapZoom, setMapZoom] = useState(13);
   const [duration, setDuration] = React.useState([0, 5000]);
   const [distance, setDistance] = React.useState([0, 50000]);
+  const [travelMode, setTravelMode] = useState(null);
   const mapRef = useRef();
 
+  const minDistance = 10;
+  const minDuration = 10;
+  const UpdateDuration = (event, newValue, activeThumb) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
 
+    if (newValue[1] - newValue[0] < minDuration) {
+      if (activeThumb === 0) {
+        const clamped = Math.min(newValue[0], 100 - minDuration);
+        setDuration([clamped, clamped + minDuration]);
+      } else {
+        const clamped = Math.max(newValue[1], minDuration);
+        setDuration([clamped - minDuration, clamped]);
+      }
+    } else {
+      setDuration(newValue);
+    }
+  };
+  const UpdateDistance = (event, newValue, activeThumb) => {
+    if (!Array.isArray(newValue)) {
+      return;
+    }
+
+    if (newValue[1] - newValue[0] < minDistance) {
+      if (activeThumb === 0) {
+        const clamped = Math.min(newValue[0], 100 - minDistance);
+        setDistance([clamped, clamped + minDistance]);
+      } else {
+        const clamped = Math.max(newValue[1], minDistance);
+        setDistance([clamped - minDistance, clamped]);
+      }
+    } else {
+      setDistance(newValue);
+    }
+  };
   const decodePolyline = (encodedPolyline) => {
     const decodedPolyline = polyline.decode(encodedPolyline);
     return decodedPolyline.map((point) => ({ lat: point[0], lng: point[1] }));
@@ -47,10 +83,9 @@ const MapPage = () => {
   };
 
   useEffect(() => {
-
     const fetchPolylineData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/rota');
+        const response = await fetch(`http://localhost:5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
         setMarkers(data.rotas);
@@ -61,7 +96,7 @@ const MapPage = () => {
 
     const fetchAreaData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/areas');
+        const response = await fetch('http://localhost:5000/areas', { mode: 'cors' });
         const data = await response.json();
         setGon(data.areas);
       } catch (error) {
@@ -71,18 +106,26 @@ const MapPage = () => {
 
     fetchPolylineData();
     fetchAreaData();
-  }, [mapCenter, mapZoom]);
+  }, [mapCenter, mapZoom, travelMode]);
+
+  function random(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+    }
 
   const polylines = useMemo(() => poly.map((rota) => {
     const polylineData = decodePolyline(rota.encodedRoutes);
+
+    var seed = rota.id + 2;
+    
     return (
       <Polyline 
         key={rota.id} map
-        pathOptions={{ color: `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})` }} 
+        pathOptions={{ color: `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})` }} 
         positions={polylineData} 
         eventHandlers={{
           click: (e) => {
-            setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration }});
+            setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration } });
           }
         }}
       />
@@ -95,86 +138,54 @@ const MapPage = () => {
         Origem<br />
         Lat: {rota.latitudeOrigem}<br />
         Lng: {rota.longitudeOrigem}<br />
-        </Popup>
+      </Popup>
     </Marker>,
     <Marker key={`destination-${rota.id}`} position={[rota.latitudeDestino, rota.longitudeDestino]}>
-    <Popup>
+      <Popup>
         Destino<br />
         Lat: {rota.latitudeDestino}<br />
         Lng: {rota.longitudeDestino}<br />
-    </Popup>
+      </Popup>
     </Marker>
+  ])), [markers]);
 
-    ])), [markers]);
-
-    const polygons = useMemo(() => gon.map((area) => {
+  const polygons = useMemo(() => gon.map((area) => {
     const positions = area.coords.map(coord => [coord[1], coord[0]]);
-    return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
-    }), [gon]);
+    return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
+  }), [gon]);
 
-    const minDistance = 10;
-    const minDuration = 10;
-    const UpdateDuration = (event, newValue, activeThumb) => {
-      if (!Array.isArray(newValue)) {
-        return;
-      }
-  
-      if (newValue[1] - newValue[0] < minDuration) {
-        if (activeThumb === 0) {
-          const clamped = Math.min(newValue[0], 100 - minDuration);
-          setDuration([clamped, clamped + minDuration]);
-        } else {
-          const clamped = Math.max(newValue[1], minDuration);
-          setDuration([clamped - minDuration, clamped]);
-        }
-      } else {
-        setDuration(newValue);
-      }
-    };
-    const UpdateDistance = (event, newValue, activeThumb) => {
-      if (!Array.isArray(newValue)) {
-        return;
-      }
-  
-      if (newValue[1] - newValue[0] < minDistance) {
-        if (activeThumb === 0) {
-          const clamped = Math.min(newValue[0], 100 - minDistance);
-          setDistance([clamped, clamped + minDistance]);
-        } else {
-          const clamped = Math.max(newValue[1], minDistance);
-          setDistance([clamped - minDistance, clamped]);
-        }
-      } else {
-        setDistance(newValue);
-      }
-    };
-
-    return (
-        <div id="centralize">
-            <div id="title">
-                <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png"/> Mapa </h1>
-            </div>
-              <SliderFilters duration = {duration} distance={distance}  UpdateDuration={UpdateDuration} UpdateDistance={UpdateDistance}/>
-            <div id="map">
-                <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
-                <MapEvents />
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {polylines}
-                {popupInfo && (
-                <Popup position={popupInfo.position}>
-                Distancia: {popupInfo.data.distanceMeters} m <br />
-                Tempo: {popupInfo.data.duration}
-                </Popup>
-                )}
-                {/* {polygons} */}
-                {markersElements}
-                </MapContainer>
-            </div>
-        </div>        
-    );
+  return (
+    <div id="centralize">
+      <div id="title">
+        <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png" /> Mapa </h1>
+        <select onChange={e => setTravelMode(e.target.value)}>
+          <option value="">All</option>
+          <option value="WALK">Walk</option>
+          <option value="DRIVE">Drive</option>
+          <option value="BICYCLE">Bicycle</option>
+        </select>
+      </div>
+      <Sliders duration={duration} distance={distance} UpdateDuration={duration} UpdateDistance={distance}/>
+      <div id="map">
+        <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
+          <MapEvents />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {polygons}
+          {polylines}
+          {popupInfo && (
+            <Popup position={popupInfo.position}>
+              Distancia: {popupInfo.data.distanceMeters} m <br />
+              Tempo: {popupInfo.data.duration}
+            </Popup>
+          )}
+          {markersElements}
+        </MapContainer>
+      </div>
+    </div>
+  );
 };
 
 export default MapPage;
