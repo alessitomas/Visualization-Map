@@ -15,6 +15,7 @@
     flex-direction: row;
     align-content: center;
     align-items: center;
+    padding: 1em;
 }
 
 #map{
