@@ -10,6 +10,7 @@ const MapPage = () => {
   const [markers, setMarkers] = useState([]);
   const [mapCenter, setMapCenter] = useState([-23.513860, -46.597593]);
   const [mapZoom, setMapZoom] = useState(13);
+  const [travelMode, setTravelMode] = useState(null);
   const mapRef = useRef();
 
   const decodePolyline = (encodedPolyline) => {
@@ -43,10 +44,9 @@ const MapPage = () => {
   };
 
   useEffect(() => {
-
     const fetchPolylineData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/rota');
+        const response = await fetch(`http://localhost:5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
         setMarkers(data.rotas);
@@ -57,7 +57,7 @@ const MapPage = () => {
 
     const fetchAreaData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/areas');
+        const response = await fetch('http://localhost:5000/areas', { mode: 'cors' });
         const data = await response.json();
         setGon(data.areas);
       } catch (error) {
@@ -67,7 +67,7 @@ const MapPage = () => {
 
     fetchPolylineData();
     fetchAreaData();
-  }, [mapCenter, mapZoom]);
+  }, [mapCenter, mapZoom, travelMode]);
 
   function random(seed) {
     var x = Math.sin(seed) * 10000;
@@ -86,7 +86,7 @@ const MapPage = () => {
         positions={polylineData} 
         eventHandlers={{
           click: (e) => {
-            setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration }});
+            setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration } });
           }
         }}
       />
@@ -99,48 +99,53 @@ const MapPage = () => {
         Origem<br />
         Lat: {rota.latitudeOrigem}<br />
         Lng: {rota.longitudeOrigem}<br />
-        </Popup>
+      </Popup>
     </Marker>,
     <Marker key={`destination-${rota.id}`} position={[rota.latitudeDestino, rota.longitudeDestino]}>
-    <Popup>
+      <Popup>
         Destino<br />
         Lat: {rota.latitudeDestino}<br />
         Lng: {rota.longitudeDestino}<br />
-    </Popup>
+      </Popup>
     </Marker>
+  ])), [markers]);
 
-    ])), [markers]);
-
-    const polygons = useMemo(() => gon.map((area) => {
+  const polygons = useMemo(() => gon.map((area) => {
     const positions = area.coords.map(coord => [coord[1], coord[0]]);
     return <Polygon key={area.name} pathOptions={{ color: 'blue' }} positions={positions} />;
-    }), [gon]);
+  }), [gon]);
 
-    return (
-        <div id="centralize">
-            <div id="title">
-                <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png"/> Mapa </h1>
-            </div>
-            <div id="map">
-                <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
-                <MapEvents />
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {polylines}
-                {popupInfo && (
-                <Popup position={popupInfo.position}>
-                Distancia: {popupInfo.data.distanceMeters} m <br />
-                Tempo: {popupInfo.data.duration}
-                </Popup>
-                )}
-                {polygons}
-                {markersElements}
-                </MapContainer>
-            </div>
-        </div>        
-    );
+  return (
+    <div id="centralize">
+      <div id="title">
+        <h1> <img id="icon-size" src="https://primedepartamentos.com/images/icons/map-icon-white.png" /> Mapa </h1>
+        <select onChange={e => setTravelMode(e.target.value)}>
+          <option value="">All</option>
+          <option value="WALK">Walk</option>
+          <option value="DRIVE">Drive</option>
+          <option value="BICYCLE">Bicycle</option>
+        </select>
+      </div>
+      <div id="map">
+        <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
+          <MapEvents />
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {polylines}
+          {popupInfo && (
+            <Popup position={popupInfo.position}>
+              Distancia: {popupInfo.data.distanceMeters} m <br />
+              Tempo: {popupInfo.data.duration}
+            </Popup>
+          )}
+          {polygons}
+          {markersElements}
+        </MapContainer>
+      </div>
+    </div>
+  );
 };
 
 export default MapPage;
