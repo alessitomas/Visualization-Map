@@ -1,8 +1,11 @@
+import React from 'react';
+
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
+
 
 const MapPage = () => {
   const [poly, setPoly] = useState([]);
@@ -117,7 +120,7 @@ const MapPage = () => {
     const polylineData = decodePolyline(rota.encodedRoutes);
 
     var seed = rota.id + 2;
-    
+
     return (
       <Polyline 
         key={rota.id} map
@@ -165,7 +168,7 @@ const MapPage = () => {
           <option value="BICYCLE">Bicycle</option>
         </select>
       </div>
-      <Sliders duration={duration} distance={distance} UpdateDuration={duration} UpdateDistance={distance}/>
+      <SliderFilters duration={duration} distance={distance} UpdateDuration={duration} UpdateDistance={distance}/>
       <div id="map">
         <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
           <MapEvents />
