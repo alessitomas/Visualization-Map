@@ -1,0 +1,23 @@
+#centralize{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+#icon-size{
+    margin-bottom: -0.17em;
+    height: 1em;
+}
+
+#title{
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
+
+#map{
+    border: 10px solid rgb(233, 235, 237);
+    border-radius: 2%;
+}

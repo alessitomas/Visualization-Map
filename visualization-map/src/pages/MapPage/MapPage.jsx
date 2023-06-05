@@ -66,20 +66,24 @@ const MapPage = () => {
   const center = [-23.513860, -46.597593];
 
   return (
-    <MapContainer center={center} zoom={13} scrollWheelZoom={true}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {poly}
-      {popupInfo && (
-        <Popup position={popupInfo.position}>
-          <p>{popupInfo.data.distanceMeters} m</p>
-          <p>{popupInfo.data.duration}</p> 
-        </Popup>
-      )}
-      {gon}
-    </MapContainer>
+    <>
+        <div id="map">
+            <MapContainer center={center} zoom={13} scrollWheelZoom={true}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {poly}
+            {popupInfo && (
+                <Popup position={popupInfo.position}>
+                <p>{popupInfo.data.distanceMeters} m</p>
+                <p>{popupInfo.data.duration}</p> 
+                </Popup>
+            )}
+            {gon}
+            </MapContainer>
+        </div>
+    </>
   );
 };
 
