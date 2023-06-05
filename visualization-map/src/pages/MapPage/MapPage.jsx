@@ -46,7 +46,7 @@ const MapPage = () => {
   useEffect(() => {
     const fetchPolylineData = async () => {
       try {
-        const response = await fetch(`http://localhost5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
+        const response = await fetch(`http://localhost:5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
         setMarkers(data.rotas);
