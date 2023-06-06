@@ -17,11 +17,11 @@ function Landing() {
     <div className="landing-page" style={{ backgroundImage: `url(${imgBackground})` }}>
       <header>
       <link rel="preconnect" href="https://fonts.googleapis.com"/>
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
         <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet"/>
 
         <link rel="preconnect" href="https://fonts.googleapis.com"/>
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/>
         <link href="https://fonts.googleapis.com/css2?family=Carlito&display=swap" rel="stylesheet"/>
 
         <h1>Bem-vindo ao PTV-SP</h1>

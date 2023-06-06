@@ -99,6 +99,28 @@
     transition: 0.2s 0.2s border-bottom-width ease-out;
 }
 
+
+#colorChangeButton {
+    display: block;
+    height: 2rem;
+    width: 100%;
+    background: #4a33b4;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: 0.3s background-color;
+    margin-bottom: 1rem;
+}
+
+#colorChangeButton:hover {
+    background: #735bde;
+}
+
+
 /* --------------------------------------- */
 
 #slider {
