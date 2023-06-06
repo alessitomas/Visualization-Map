@@ -88,7 +88,12 @@ const MapPage = () => {
   useEffect(() => {
     const fetchPolylineData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
+        const durationQueryParam = `duration_min=${duration[0]}&duration_max=${duration[1]}`;
+        const distanceQueryParam = `distance_min=${distance[0]}&distance_max=${distance[1]}`;
+        const queryParams = [durationQueryParam, distanceQueryParam].join('&');
+        console.log(`http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`)
+        const url = `http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
+        const response = await fetch(url, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
         setMarkers(data.rotas);
@@ -96,7 +101,13 @@ const MapPage = () => {
         console.error('Error fetching polyline data:', error);
       }
     };
-
+  
+    fetchPolylineData();
+  }, [duration, distance, travelMode]);
+  
+  
+  
+  useEffect(() => {
     const fetchAreaData = async () => {
       try {
         const response = await fetch('http://localhost:5000/areas', { mode: 'cors' });
@@ -106,10 +117,8 @@ const MapPage = () => {
         console.error('Error fetching areas data:', error);
       }
     };
-
-    fetchPolylineData();
     fetchAreaData();
-  }, [mapCenter, mapZoom, travelMode]);
+  }, []);
 
   function random(seed) {
     var x = Math.sin(seed) * 10000;
@@ -156,7 +165,8 @@ const MapPage = () => {
     const positions = area.coords.map(coord => [coord[1], coord[0]]);
     return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
   }), [gon]);
-  
+  console.log(duration)
+  console.log(distance)
   return (
     <>
     <div id="row">
