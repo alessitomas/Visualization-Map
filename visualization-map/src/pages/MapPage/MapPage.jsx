@@ -12,7 +12,8 @@ const MapPage = () => {
   const [gon, setGon] = useState([]);
   const [markers, setMarkers] = useState([]);
   const [mapCenter, setMapCenter] = useState([-23.513860, -46.597593]);
-  const [mapZoom, setMapZoom] = useState(13);
+  const [mapZoom, setMapZoom] = useState(15);
+  const [macro, setMacro] = useState([]); 
   const [duration, setDuration] = React.useState([0, 5000]);
   const [distance, setDistance] = React.useState([0, 50000]);
   const [travelMode, setTravelMode] = useState(null);
@@ -59,30 +60,33 @@ const MapPage = () => {
     return decodedPolyline.map((point) => ({ lat: point[0], lng: point[1] }));
   };
 
-  const MapEvents = () => {
-    const map = useMap();
 
-    useEffect(() => {
-      mapRef.current = map;
-    }, [map]);
+  useEffect(() => {
+    const fetchAreaData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/areas', { mode: 'cors' });
+        const data = await response.json();
+        setGon(data.areas);
+      } catch (error) {
+        console.error('Error fetching areas data:', error);
+      }
+    };
+    fetchAreaData();
 
-    useEffect(() => {
-      if (!mapRef.current) return;
+  }, []);
 
-      const handleMove = () => {
-        setMapCenter(mapRef.current.getCenter());
-        setMapZoom(mapRef.current.getZoom());
-      };
-
-      mapRef.current.on('moveend', handleMove);
-
-      return () => {
-        mapRef.current.off('moveend', handleMove);
-      };
-    }, [mapRef]);
-
-    return null;
-  };
+  useEffect(() => {
+    const fetchMacroData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/macro', { mode: 'cors' });
+        const data = await response.json();
+        setMacro(data.routes);
+      } catch (error) {
+        console.error('Error fetching macro data:', error);
+      }
+    };
+    fetchMacroData();
+  }, []);
 
   useEffect(() => {
     const fetchPolylineData = async () => {
@@ -96,30 +100,24 @@ const MapPage = () => {
       }
     };
 
-    const fetchAreaData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/areas', { mode: 'cors' });
-        const data = await response.json();
-        setGon(data.areas);
-      } catch (error) {
-        console.error('Error fetching areas data:', error);
-      }
-    };
-
     fetchPolylineData();
-    fetchAreaData();
-  }, [mapCenter, mapZoom, travelMode]);
+
+  }, [travelMode]);
 
   function random(seed) {
     var x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
     }
 
+  function generateColor(num_seed) {
+    return `rgb(${Math.floor(random(num_seed) * 255 )},${Math.floor(random(num_seed+1) * 255)},${Math.floor(random(num_seed-1) * 255)})`;
+  }
+
+
   const polylines = useMemo(() => poly.map((rota) => {
     const polylineData = decodePolyline(rota.encodedRoutes);
 
-    var seed = rota.id + 2;
-    var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
+    var curColor = generateColor(rota.id+2);
     var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
 
     return (
@@ -158,6 +156,22 @@ const MapPage = () => {
     return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
   }), [gon]);
 
+  const polylinesMacro = useMemo(() => macro.map((rota) => {
+    var curColor = generateColor(rota.people+2);
+    const newPos = rota.route.map(coord => [coord[1], coord[0]]);
+
+    return (
+      
+      <Polyline
+        key={rota.name} map
+        pathOptions={{ color: curColor }}
+        positions={ newPos}
+      />
+    );
+  }), [macro]);
+
+
+
   return (
     <>
     <div id="row">
@@ -179,13 +193,14 @@ const MapPage = () => {
             </div>
             <div id="map">
                 <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true}>
-                <MapEvents />
+                
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 {polygons}
                 {polylines}
+                {polylinesMacro}
                 {popupInfo && (
                     <Popup position={popupInfo.position}>
                     Distancia: {popupInfo.data.distanceMeters} m <br />
