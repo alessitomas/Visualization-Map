@@ -18,7 +18,8 @@ const MapPage = () => {
   const [distance, setDistance] = React.useState([0, 50000]);
   const [travelMode, setTravelMode] = useState(null);
   const mapRef = useRef();
-
+  const [colorOption, setColorOption] = useState("curColor");
+  const [colorSeed, setColorSeed] = useState(0);
   const minDistance = 10;
   const minDuration = 10;
   const updateDuration = (event, newValue, activeThumb) => {
@@ -114,30 +115,47 @@ const MapPage = () => {
     return x - Math.floor(x);
     }
 
-  function generateColor(num_seed) {
-    return `rgb(${Math.floor(random(num_seed) * 255 )},${Math.floor(random(num_seed+1) * 255)},${Math.floor(random(num_seed-1) * 255)})`;
-  }
-
-
-  const polylines = useMemo(() => poly.map((rota) => {
-    const polylineData = decodePolyline(rota.encodedRoutes);
-
-    var curColor = generateColor(rota.id+2);
-    var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
-
-    return (
-      <Polyline 
-        key={rota.id} map
-        pathOptions={{ color: distColor }} 
-        positions={polylineData} 
-        eventHandlers={{
-          click: (e) => {
-            setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration } });
-          }
-        }}
-      />
-    );
-  }), [poly]);
+    const polylines = useMemo(() => poly.map((rota) => {
+      const polylineData = decodePolyline(rota.encodedRoutes);
+    
+      var seed = rota.id + 2 + colorSeed;
+      var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
+      var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
+    
+      var durationInSeconds = parseInt(rota.duration.slice(0, -1));
+      var intensity = Math.min(Math.floor(durationInSeconds / 10), 255); // Ajuste o divisor conforme necessário
+      var timeColor = `rgb(${(0)},${0},${intensity})`; 
+    
+      let selectedColor;
+      switch(colorOption){
+        case 'curColor':
+          selectedColor = curColor;
+          break;
+        case 'distColor':
+          selectedColor = distColor;
+          break;
+        case 'timeColor':
+          selectedColor = timeColor;
+          break;
+        default:
+          selectedColor = curColor;
+      }
+    
+      return (
+        <Polyline 
+          key={rota.id} map
+          pathOptions={{ color: selectedColor }} 
+          positions={polylineData} 
+          eventHandlers={{
+            click: (e) => {
+              setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration } });
+            }
+          }}
+        />
+      );
+    }), [poly, colorOption]);
+    
+  
 
   const markersElements = useMemo(() => markers.flatMap((rota) => ([
     <Marker key={`origin-${rota.id}`} position={[rota.latitudeOrigem, rota.longitudeOrigem]}>
@@ -181,6 +199,13 @@ const MapPage = () => {
     <>
     <div id="row">
         <div id="selectors">
+          <select onChange={(e) => setColorOption(e.target.value)} id="colorChangeSelect">
+              <option value="curColor">curColor</option>
+              <option value="distColor">distColor</option>
+              <option value="timeColor">timeColor</option>
+            </select>
+
+
             <select onChange={e => setTravelMode(e.target.value)} id="dropdown">
                 <option value="">All</option>
                 <option value="WALK">Walk</option>
