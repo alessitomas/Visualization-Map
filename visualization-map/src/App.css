@@ -32,6 +32,10 @@
 
 #selectors{
     margin: 2%;
+    padding: 3rem;
+    border: 0.5em double #4d4b4b;
+    border-radius: 2%;
+    background-color: rgb(70, 66, 66);
     width: 50rem;
     min-height: 100%;
     max-width: 30%;
