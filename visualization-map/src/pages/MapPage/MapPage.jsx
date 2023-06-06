@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker } from 'react-leaflet';
+import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
@@ -203,16 +203,40 @@ const MapPage = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {polygons}
-                {polylines}
-                {polylinesMacro}
-                {popupInfo && (
+
+                <LayersControl position="topright">
+                  <LayersControl.Overlay checked name="Rotas">
+                    <LayerGroup>
+                      {polylines}
+                      {popupInfo && (
                     <Popup position={popupInfo.position}>
                     Distancia: {popupInfo.data.distanceMeters} m <br />
                     Tempo: {popupInfo.data.duration}
                     </Popup>
                 )}
-                {markersElements}
+                    </LayerGroup>
+                  </LayersControl.Overlay>
+
+                <LayersControl.Overlay checked name="Marcadores">
+                  <LayerGroup>
+                      {markersElements}
+                  </LayerGroup>
+                </LayersControl.Overlay>
+
+                  <LayersControl.Overlay checked name="Áreas">
+                    <LayerGroup>
+                    {polygons}
+                    </LayerGroup>
+                  </LayersControl.Overlay>
+
+                <LayersControl.Overlay checked name="Macro Rotas">  
+                    <LayerGroup>
+                      {polylinesMacro}
+                    </LayerGroup>
+                </LayersControl.Overlay>
+
+
+                </LayersControl>
                 </MapContainer>
             </div>
         </div>
