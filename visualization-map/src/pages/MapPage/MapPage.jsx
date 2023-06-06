@@ -236,18 +236,18 @@ const MapPage = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                <LayersControl position="topright">
-                  <LayersControl.Overlay checked name="Rotas">
-                    <LayerGroup>
-                      {polylines}
-                      {popupInfo && (
-                    <Popup position={popupInfo.position}>
-                    Distancia: {popupInfo.data.distanceMeters} m <br />
-                    Tempo: {popupInfo.data.duration}
-                    </Popup>
-                )}
-                    </LayerGroup>
-                  </LayersControl.Overlay>
+              <LayersControl position="topright">
+                <LayersControl.Overlay checked name="Rotas">
+                  <LayerGroup>
+                    {polylines}
+                    {popupInfo && (
+                  <Popup position={popupInfo.position}>
+                  Distancia: {popupInfo.data.distanceMeters} m <br />
+                  Tempo: {popupInfo.data.duration}
+                  </Popup>
+              )}
+                  </LayerGroup>
+                </LayersControl.Overlay>
 
                 <LayersControl.Overlay checked name="Marcadores">
                   <LayerGroup>
@@ -255,16 +255,16 @@ const MapPage = () => {
                   </LayerGroup>
                 </LayersControl.Overlay>
 
-                  <LayersControl.Overlay checked name="Áreas">
-                    <LayerGroup>
+                <LayersControl.Overlay checked name="Áreas">
+                  <LayerGroup>
                     {polygons}
-                    {popupInfo && (
+                    {/* {popupInfo && (
                     <Popup position={popupInfo.position}>
                     {popupInfo.data.name} <br />
                     </Popup>
-                    )}
-                    </LayerGroup>
-                  </LayersControl.Overlay>
+                    )} */}
+                  </LayerGroup>
+                </LayersControl.Overlay>
 
                 <LayersControl.Overlay checked name="Macro Rotas">  
                     <LayerGroup>
