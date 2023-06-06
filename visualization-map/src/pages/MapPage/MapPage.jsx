@@ -176,11 +176,20 @@ const MapPage = () => {
 
   const polygons = useMemo(() => gon.map((area) => {
     const positions = area.coords.map(coord => [coord[1], coord[0]]);
-    return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
+    return (
+    <Polygon 
+    key={area.name} 
+    pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} 
+    positions={positions} 
+    eventHandlers={{
+      click: (e) => {
+        setPopupInfo({ position: e.latlng, data: { name: area.name } });
+      }
+    }}/>);
   }), [gon]);
 
   const polylinesMacro = useMemo(() => macro.map((rota) => {
-    var seed = rota.people;
+    var seed = rota.id;
     var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`;
     const newPos = rota.route.map(coord => [coord[1], coord[0]]);
 
@@ -249,6 +258,11 @@ const MapPage = () => {
                   <LayersControl.Overlay checked name="Áreas">
                     <LayerGroup>
                     {polygons}
+                    {popupInfo && (
+                    <Popup position={popupInfo.position}>
+                    {popupInfo.data.name} <br />
+                    </Popup>
+                    )}
                     </LayerGroup>
                   </LayersControl.Overlay>
 
