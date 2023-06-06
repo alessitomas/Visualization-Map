@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker } from 'react-leaflet';
+import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
@@ -18,10 +18,11 @@ const MapPage = () => {
   const [distance, setDistance] = React.useState([0, 50000]);
   const [travelMode, setTravelMode] = useState(null);
   const mapRef = useRef();
-
+  const [colorOption, setColorOption] = useState("curColor");
+  const [colorSeed, setColorSeed] = useState(0);
   const minDistance = 10;
   const minDuration = 10;
-  const UpdateDuration = (event, newValue, activeThumb) => {
+  const updateDuration = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -38,7 +39,7 @@ const MapPage = () => {
       setDuration(newValue);
     }
   };
-  const UpdateDistance = (event, newValue, activeThumb) => {
+  const updateDistance = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -91,7 +92,12 @@ const MapPage = () => {
   useEffect(() => {
     const fetchPolylineData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
+        const durationQueryParam = `duration_min=${duration[0]}&duration_max=${duration[1]}`;
+        const distanceQueryParam = `distance_min=${distance[0]}&distance_max=${distance[1]}`;
+        const queryParams = [durationQueryParam, distanceQueryParam].join('&');
+        console.log(`http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`)
+        const url = `http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
+        const response = await fetch(url, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
         setMarkers(data.rotas);
@@ -99,40 +105,57 @@ const MapPage = () => {
         console.error('Error fetching polyline data:', error);
       }
     };
-
+  
     fetchPolylineData();
-
-  }, [travelMode]);
+  }, [duration, distance, travelMode]);
+  
 
   function random(seed) {
     var x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
     }
 
-  function generateColor(num_seed) {
-    return `rgb(${Math.floor(random(num_seed) * 255 )},${Math.floor(random(num_seed+1) * 255)},${Math.floor(random(num_seed-1) * 255)})`;
-  }
-
-
-  const polylines = useMemo(() => poly.map((rota) => {
-    const polylineData = decodePolyline(rota.encodedRoutes);
-
-    var curColor = generateColor(rota.id+2);
-    var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
-
-    return (
-      <Polyline 
-        key={rota.id} map
-        pathOptions={{ color: distColor }} 
-        positions={polylineData} 
-        eventHandlers={{
-          click: (e) => {
-            setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration } });
-          }
-        }}
-      />
-    );
-  }), [poly]);
+    const polylines = useMemo(() => poly.map((rota) => {
+      const polylineData = decodePolyline(rota.encodedRoutes);
+    
+      var seed = rota.id + 2 + colorSeed;
+      var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
+      var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
+    
+      var durationInSeconds = parseInt(rota.duration.slice(0, -1));
+      var intensity = Math.min(Math.floor(durationInSeconds / 10), 255); // Ajuste o divisor conforme necessário
+      var timeColor = `rgb(${(0)},${0},${intensity})`; 
+    
+      let selectedColor;
+      switch(colorOption){
+        case 'curColor':
+          selectedColor = curColor;
+          break;
+        case 'distColor':
+          selectedColor = distColor;
+          break;
+        case 'timeColor':
+          selectedColor = timeColor;
+          break;
+        default:
+          selectedColor = curColor;
+      }
+    
+      return (
+        <Polyline 
+          key={rota.id} map
+          pathOptions={{ color: selectedColor }} 
+          positions={polylineData} 
+          eventHandlers={{
+            click: (e) => {
+              setPopupInfo({ position: e.latlng, data: { distanceMeters: rota.distanceMeters, duration: rota.duration } });
+            }
+          }}
+        />
+      );
+    }), [poly, colorOption]);
+    
+  
 
   const markersElements = useMemo(() => markers.flatMap((rota) => ([
     <Marker key={`origin-${rota.id}`} position={[rota.latitudeOrigem, rota.longitudeOrigem]}>
@@ -157,7 +180,8 @@ const MapPage = () => {
   }), [gon]);
 
   const polylinesMacro = useMemo(() => macro.map((rota) => {
-    var curColor = generateColor(rota.people+2);
+    var seed = rota.people;
+    var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`;
     const newPos = rota.route.map(coord => [coord[1], coord[0]]);
 
     return (
@@ -182,9 +206,13 @@ const MapPage = () => {
                 <option value="DRIVE">Drive</option>
                 <option value="BICYCLE">Bicycle</option>
             </select>
-            <select id="dropdown"><option value=""> T B D </option></select>
+            <select onChange={(e) => setColorOption(e.target.value)} id="colorChangeSelect">
+              <option value="curColor">curColor</option>
+              <option value="distColor">distColor</option>
+              <option value="timeColor">timeColor</option>
+          </select>
             <div id="slider">
-              <SliderFilters duration = {duration} distance={distance}  UpdateDuration={UpdateDuration} UpdateDistance={UpdateDistance} />
+              <SliderFilters duration = {duration} distance={distance}  updateDuration={updateDuration} updateDistance={updateDistance} />
             </div>
         </div>
         <div id="centralize">
@@ -198,16 +226,40 @@ const MapPage = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {polygons}
-                {polylines}
-                {polylinesMacro}
-                {popupInfo && (
+
+                <LayersControl position="topright">
+                  <LayersControl.Overlay checked name="Rotas">
+                    <LayerGroup>
+                      {polylines}
+                      {popupInfo && (
                     <Popup position={popupInfo.position}>
                     Distancia: {popupInfo.data.distanceMeters} m <br />
                     Tempo: {popupInfo.data.duration}
                     </Popup>
                 )}
-                {markersElements}
+                    </LayerGroup>
+                  </LayersControl.Overlay>
+
+                <LayersControl.Overlay checked name="Marcadores">
+                  <LayerGroup>
+                      {markersElements}
+                  </LayerGroup>
+                </LayersControl.Overlay>
+
+                  <LayersControl.Overlay checked name="Áreas">
+                    <LayerGroup>
+                    {polygons}
+                    </LayerGroup>
+                  </LayersControl.Overlay>
+
+                <LayersControl.Overlay checked name="Macro Rotas">  
+                    <LayerGroup>
+                      {polylinesMacro}
+                    </LayerGroup>
+                </LayersControl.Overlay>
+
+
+                </LayersControl>
                 </MapContainer>
             </div>
         </div>

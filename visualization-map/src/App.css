@@ -32,6 +32,10 @@
 
 #selectors{
     margin: 2%;
+    padding: 3rem;
+    border: 0.5em double #4d4b4b;
+    border-radius: 2%;
+    background-color: rgb(70, 66, 66);
     width: 50rem;
     min-height: 100%;
     max-width: 30%;
@@ -42,7 +46,7 @@
 
 /* --------------------------------------- */
 
-#dropdown {
+#dropdown, #colorChangeSelect {
     display: block;
     height: 2rem;
     background: #4a33b4;
@@ -53,7 +57,7 @@
     border-radius: 0.5rem;
 }
 
-#dropdown:before {
+#dropdown:before, #colorChangeSelect:before {
     content: "";
     display: block;
     height: 0;
@@ -68,10 +72,10 @@
       0.3s border-top-color;
 }
 
-#dropdown:hover { 
+#dropdown:hover, #colorChangeSelect:hover { 
     background: #735bde; 
 }
-#dropdown:hover:before { 
+#dropdown:hover:before, #colorChangeSelect:before { 
     border-top-color: #4a33b4; 
 }
   
@@ -82,7 +86,7 @@
       0.3s border-top-color;
 }
   
-#dropdown:after {
+#dropdown:after, #colorChangeSelect:after {
     content: "";
     display: block;
     height: 0;
@@ -98,6 +102,28 @@
     border-bottom-width: 5px;
     transition: 0.2s 0.2s border-bottom-width ease-out;
 }
+
+
+#colorChangeButton {
+    display: block;
+    height: 2rem;
+    width: 100%;
+    background: #4a33b4;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: 0.3s background-color;
+    margin-bottom: 1rem;
+}
+
+#colorChangeButton:hover {
+    background: #735bde;
+}
+
 
 /* --------------------------------------- */
 
