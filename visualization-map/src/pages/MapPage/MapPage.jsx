@@ -199,7 +199,7 @@ const MapPage = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
                 {polygons}
-                {/* {polylines} */}
+                {polylines}
                 {polylinesMacro}
                 {popupInfo && (
                     <Popup position={popupInfo.position}>
@@ -207,7 +207,7 @@ const MapPage = () => {
                     Tempo: {popupInfo.data.duration}
                     </Popup>
                 )}
-                {/* {markersElements} */}
+                {markersElements}
                 </MapContainer>
             </div>
         </div>
