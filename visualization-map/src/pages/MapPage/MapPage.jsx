@@ -73,7 +73,7 @@ const MapPage = () => {
     };
     fetchAreaData();
 
-  });
+  }, []);
 
   useEffect(() => {
     const fetchMacroData = async () => {
@@ -86,7 +86,7 @@ const MapPage = () => {
       }
     };
     fetchMacroData();
-  })
+  }, []);
 
   useEffect(() => {
     const fetchPolylineData = async () => {
@@ -157,17 +157,15 @@ const MapPage = () => {
   }), [gon]);
 
   const polylinesMacro = useMemo(() => macro.map((rota) => {
-    var curColor = generateColor(rota.id+2);
-    console.log(rota.name);
-    console.log(rota.route);
+    var curColor = generateColor(rota.people+2);
+    const newPos = rota.route.map(coord => [coord[1], coord[0]]);
+
     return (
       
       <Polyline
         key={rota.name} map
-        pathOptions={{ color: "red" }}
-        positions={[
-          [-46.68535939870177,-23.602105444274102],
-          [-46.635799002212465,-23.58650343892533]]}
+        pathOptions={{ color: curColor }}
+        positions={ newPos}
       />
     );
   }), [macro]);
@@ -200,7 +198,7 @@ const MapPage = () => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {/* {polygons} */}
+                {polygons}
                 {/* {polylines} */}
                 {polylinesMacro}
                 {popupInfo && (
@@ -209,7 +207,7 @@ const MapPage = () => {
                     Tempo: {popupInfo.data.duration}
                     </Popup>
                 )}
-                {markersElements}
+                {/* {markersElements} */}
                 </MapContainer>
             </div>
         </div>
