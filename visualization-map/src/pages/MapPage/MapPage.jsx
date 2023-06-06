@@ -180,7 +180,8 @@ const MapPage = () => {
   }), [gon]);
 
   const polylinesMacro = useMemo(() => macro.map((rota) => {
-    var curColor = generateColor(rota.people+2);
+    var seed = rota.people;
+    var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`;
     const newPos = rota.route.map(coord => [coord[1], coord[0]]);
 
     return (
@@ -199,20 +200,17 @@ const MapPage = () => {
     <>
     <div id="row">
         <div id="selectors">
-          <select onChange={(e) => setColorOption(e.target.value)} id="colorChangeSelect">
-              <option value="curColor">curColor</option>
-              <option value="distColor">distColor</option>
-              <option value="timeColor">timeColor</option>
-            </select>
-
-
             <select onChange={e => setTravelMode(e.target.value)} id="dropdown">
                 <option value="">All</option>
                 <option value="WALK">Walk</option>
                 <option value="DRIVE">Drive</option>
                 <option value="BICYCLE">Bicycle</option>
             </select>
-            <select id="dropdown"><option value=""> T B D </option></select>
+            <select onChange={(e) => setColorOption(e.target.value)} id="colorChangeSelect">
+              <option value="curColor">curColor</option>
+              <option value="distColor">distColor</option>
+              <option value="timeColor">timeColor</option>
+          </select>
             <div id="slider">
               <SliderFilters duration = {duration} distance={distance}  updateDuration={updateDuration} updateDistance={updateDistance} />
             </div>

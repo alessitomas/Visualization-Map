@@ -46,7 +46,7 @@
 
 /* --------------------------------------- */
 
-#dropdown {
+#dropdown, #colorChangeSelect {
     display: block;
     height: 2rem;
     background: #4a33b4;
@@ -57,7 +57,7 @@
     border-radius: 0.5rem;
 }
 
-#dropdown:before {
+#dropdown:before, #colorChangeSelect:before {
     content: "";
     display: block;
     height: 0;
@@ -72,10 +72,10 @@
       0.3s border-top-color;
 }
 
-#dropdown:hover { 
+#dropdown:hover, #colorChangeSelect:hover { 
     background: #735bde; 
 }
-#dropdown:hover:before { 
+#dropdown:hover:before, #colorChangeSelect:before { 
     border-top-color: #4a33b4; 
 }
   
@@ -86,7 +86,7 @@
       0.3s border-top-color;
 }
   
-#dropdown:after {
+#dropdown:after, #colorChangeSelect:after {
     content: "";
     display: block;
     height: 0;
