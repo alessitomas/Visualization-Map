@@ -21,7 +21,7 @@ const MapPage = () => {
 
   const minDistance = 10;
   const minDuration = 10;
-  const UpdateDuration = (event, newValue, activeThumb) => {
+  const updateDuration = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -38,7 +38,7 @@ const MapPage = () => {
       setDuration(newValue);
     }
   };
-  const UpdateDistance = (event, newValue, activeThumb) => {
+  const updateDistance = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
     }
@@ -91,7 +91,12 @@ const MapPage = () => {
   useEffect(() => {
     const fetchPolylineData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/rota${travelMode ? `?travelMode=${travelMode}` : ''}`, { mode: 'cors' });
+        const durationQueryParam = `duration_min=${duration[0]}&duration_max=${duration[1]}`;
+        const distanceQueryParam = `distance_min=${distance[0]}&distance_max=${distance[1]}`;
+        const queryParams = [durationQueryParam, distanceQueryParam].join('&');
+        console.log(`http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`)
+        const url = `http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
+        const response = await fetch(url, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
         setMarkers(data.rotas);
@@ -99,10 +104,10 @@ const MapPage = () => {
         console.error('Error fetching polyline data:', error);
       }
     };
-
+  
     fetchPolylineData();
-
-  }, [travelMode]);
+  }, [duration, distance, travelMode]);
+  
 
   function random(seed) {
     var x = Math.sin(seed) * 10000;
@@ -184,7 +189,7 @@ const MapPage = () => {
             </select>
             <select id="dropdown"><option value=""> T B D </option></select>
             <div id="slider">
-              <SliderFilters duration = {duration} distance={distance}  UpdateDuration={UpdateDuration} UpdateDistance={UpdateDistance} />
+              <SliderFilters duration = {duration} distance={distance}  updateDuration={updateDuration} updateDistance={updateDistance} />
             </div>
         </div>
         <div id="centralize">
