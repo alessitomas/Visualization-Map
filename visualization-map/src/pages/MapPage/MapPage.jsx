@@ -7,6 +7,19 @@ import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
 import "leaflet-polylinedecorator";
 import L, { PolylineDecorator } from "leaflet";
+import { Icon } from 'leaflet';
+
+const destinationIcon = new Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+
+const originIcon = new Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
 
 
 const MapPage = () => {
@@ -182,14 +195,14 @@ const MapPage = () => {
   
 
   const markersElements = useMemo(() => markers.flatMap((rota) => ([
-    <Marker key={`origin-${rota.id}`} position={[rota.latitudeOrigem, rota.longitudeOrigem]}>
+    <Marker key={`origin-${rota.id}`} position={[rota.latitudeOrigem, rota.longitudeOrigem]} icon={originIcon}>
       <Popup>
         Origem<br />
         Lat: {rota.latitudeOrigem}<br />
         Lng: {rota.longitudeOrigem}<br />
       </Popup>
     </Marker>,
-    <Marker key={`destination-${rota.id}`} position={[rota.latitudeDestino, rota.longitudeDestino]}>
+    <Marker key={`destination-${rota.id}`} position={[rota.latitudeDestino, rota.longitudeDestino]} icon={destinationIcon}>
       <Popup>
         Destino<br />
         Lat: {rota.latitudeDestino}<br />
