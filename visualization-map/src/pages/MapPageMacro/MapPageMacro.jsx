@@ -314,11 +314,9 @@ const MapPageMacro = () => {
                   </LayerGroup>
                 </LayersControl.Overlay>
 
-                <LayersControl.Overlay checked name="Macro Rotas">  
-                    <LayerGroup>
-                      {polylinesMacro}
-                    </LayerGroup>
-                </LayersControl.Overlay>
+                <LayerGroup>
+                  {polylinesMacro}
+                </LayerGroup>
 
 
                 </LayersControl>
