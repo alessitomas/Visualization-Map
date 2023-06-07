@@ -125,7 +125,7 @@ const MapPageMacro = () => {
   useEffect(() => {
     const fetchAreaData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/areas', { mode: 'cors' });
+        const response = await fetch('https://esdrasgc.pythonanywhere.com/areas', { mode: 'cors' });
         const data = await response.json();
         setGon(data.areas);
       } catch (error) {
@@ -139,7 +139,7 @@ const MapPageMacro = () => {
   useEffect(() => {
     const fetchMacroData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/macro', { mode: 'cors' });
+        const response = await fetch('https://esdrasgc.pythonanywhere.com/macro', { mode: 'cors' });
         const data = await response.json();
         setMacro(data.routes);
       } catch (error) {
@@ -155,7 +155,7 @@ const MapPageMacro = () => {
         const durationQueryParam = `duration_min=${duration[0]*3600}&duration_max=${duration[1]*3600}`;
         const distanceQueryParam = `distance_min=${distance[0]}&distance_max=${distance[1]}`;
         const queryParams = [durationQueryParam, distanceQueryParam].join('&');
-        const url = `http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
+        const url = `https://esdrasgc.pythonanywhere.com/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
         const response = await fetch(url, { mode: 'cors' });
         const data = await response.json();
         setPoly(data.rotas);
