@@ -1,9 +1,11 @@
 import React from 'react';
 import { useEffect, useState, useMemo } from 'react';
-import { MapContainer, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
+import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
+import "leaflet-polylinedecorator";
+import L, { PolylineDecorator } from "leaflet";
 
 
 const MapPage = () => {
@@ -23,6 +25,23 @@ const MapPage = () => {
   const minDuration = 10;
 
   // FUNCTIONS SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  
+  function PolylineDecorator({ patterns, polyline, choisedColor }) {
+    const map = useMap();
+  
+    useEffect(() => {
+      if (!map) return;
+  
+      L.polyline(polyline, {color:choisedColor}).addTo(map);
+      L.polylineDecorator(polyline, {
+        patterns
+      }).addTo(map);
+    }, [map]);
+  
+    return null;
+  }
+  
+  
   const updateDuration = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
@@ -205,14 +224,21 @@ const MapPage = () => {
     var seed = rota.id;
     var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`;
     const newPos = rota.route.map(coord => [coord[1], coord[0]]);
-
+    const arrow = [
+      {
+        offset: "10%",
+        repeat: "20%",
+        symbol: L.Symbol.arrowHead({
+        
+          pixelSize: 20,
+          polygon: false,
+          pathOptions: { stroke: true , color: curColor}
+        })
+      }
+    ];
     return (
       
-      <Polyline
-        key={rota.name} map
-        pathOptions={{ color: curColor }}
-        positions={ newPos}
-      />
+      <PolylineDecorator patterns={arrow} polyline={newPos} choisedColor={curColor} />
     );
   }), [macro]);
 
