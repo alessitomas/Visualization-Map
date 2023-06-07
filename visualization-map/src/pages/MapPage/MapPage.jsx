@@ -1,6 +1,6 @@
 import React from 'react';
-import { useEffect, useState, useRef, useMemo } from 'react';
-import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
+import { useEffect, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
@@ -11,17 +11,18 @@ const MapPage = () => {
   const [popupInfo, setPopupInfo] = useState(null);
   const [gon, setGon] = useState([]);
   const [markers, setMarkers] = useState([]);
-  const [mapCenter, setMapCenter] = useState([-23.513860, -46.597593]);
-  const [mapZoom, setMapZoom] = useState(15);
   const [macro, setMacro] = useState([]); 
   const [duration, setDuration] = React.useState([0, 5000]);
   const [distance, setDistance] = React.useState([0, 50000]);
   const [travelMode, setTravelMode] = useState(null);
-  const mapRef = useRef();
   const [colorOption, setColorOption] = useState("curColor");
-  const [colorSeed, setColorSeed] = useState(0);
+  var colorSeed = 0;
+  var mapZoom = 15;
+  var mapCenter = [-23.513860, -46.597593];
   const minDistance = 10;
   const minDuration = 10;
+
+  // FUNCTIONS SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   const updateDuration = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
@@ -61,7 +62,27 @@ const MapPage = () => {
     return decodedPolyline.map((point) => ({ lat: point[0], lng: point[1] }));
   };
 
+  function random(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+    }
 
+    function curColor(seed) {
+      return `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
+    }
+  
+    function distanceColor(distance) {
+      return `rgb(${255-Math.floor(distance/200)},${0},${0})`;
+    }
+  
+    function durationColor(duration) {
+      var durationInSeconds = parseInt(duration.slice(0, -1));
+      var intensity = Math.min(Math.floor(durationInSeconds / 10), 255); // Ajuste o divisor conforme necessário
+      return `rgb(${(0)},${0},${intensity})`; 
+    }
+  
+
+  // USE EFFECT SECTION  (requests to backend)-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   useEffect(() => {
     const fetchAreaData = async () => {
       try {
@@ -109,27 +130,19 @@ const MapPage = () => {
     fetchPolylineData();
   }, [duration, distance, travelMode]);
   
-
-  function random(seed) {
-    var x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
-    }
+  // ELEMENTS SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
     const polylines = useMemo(() => poly.map((rota) => {
       const polylineData = decodePolyline(rota.encodedRoutes);
     
-      var seed = rota.id + 2 + colorSeed;
-      var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`; 
-      var distColor = `rgb(${255-Math.floor(rota.distanceMeters/200)},${0},${0})`; 
-    
-      var durationInSeconds = parseInt(rota.duration.slice(0, -1));
-      var intensity = Math.min(Math.floor(durationInSeconds / 10), 255); // Ajuste o divisor conforme necessário
-      var timeColor = `rgb(${(0)},${0},${intensity})`; 
+      var cColor = curColor(rota.id + 2 + colorSeed);
+      var distColor = distanceColor(rota.distanceMeters); 
+      var timeColor = durationColor(rota.duration);
     
       let selectedColor;
       switch(colorOption){
         case 'curColor':
-          selectedColor = curColor;
+          selectedColor = cColor;
           break;
         case 'distColor':
           selectedColor = distColor;
@@ -138,7 +151,7 @@ const MapPage = () => {
           selectedColor = timeColor;
           break;
         default:
-          selectedColor = curColor;
+          selectedColor = cColor;
       }
     
       return (
@@ -203,7 +216,7 @@ const MapPage = () => {
     );
   }), [macro]);
 
-
+// PAGE PRESENTATION SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
   return (
     <>
