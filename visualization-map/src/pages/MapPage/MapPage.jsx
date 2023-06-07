@@ -219,7 +219,7 @@ const MapPage = () => {
     <div id="row">
         <div id="selectors">
             <button
-              className="image-button" id="buttonSwitch"
+              id="buttonSwitch"
               onClick={handleClickDiffPage}
             >Ativar Macros</button>
             <select onChange={e => setTravelMode(e.target.value)} id="dropdown">

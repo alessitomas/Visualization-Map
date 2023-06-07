@@ -254,8 +254,7 @@ const MapPageMacro = () => {
     <>
     <div id="row">
         <div id="selectors">
-            <button
-              className="image-button" id="buttonSwitch"
+            <button id="buttonSwitch"
               onClick={handleClickDiffPage}
             >Desativar Macros</button>
             <select onChange={e => setTravelMode(e.target.value)} id="dropdown">
