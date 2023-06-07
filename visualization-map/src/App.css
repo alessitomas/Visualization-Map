@@ -49,19 +49,20 @@
 #dropdown, #colorChangeSelect {
     display: block;
     height: 2rem;
-    background: #4a33b4;
+    background: rgb(24, 117, 210);
     text-align: center;
     font-weight: bold;
     text-transform: uppercase;
     transition: 0.3s background-color;
     border-radius: 0.5rem;
+    color: white;
 }
 
 #dropdown:before, #colorChangeSelect:before {
     content: "";
     display: block;
     height: 0;
-    border-top: 5px solid #4a33b4;
+    border-top: 5px solid rgba(24,118, 210,1); 
     border-bottom: 0 solid #dddddd;
     position: absolute;
     top: 100%;
@@ -73,10 +74,10 @@
 }
 
 #dropdown:hover, #colorChangeSelect:hover { 
-    background: #735bde; 
+    background: rgb(38, 144, 231); 
 }
 #dropdown:hover:before, #colorChangeSelect:before { 
-    border-top-color: #4a33b4; 
+    border-top-color: rgba(24,118, 210,1); 
 }
   
 #dropdown:hover > #dropdown:before {
@@ -108,9 +109,9 @@
     display: block;
     height: 2rem;
     width: 100%;
-    background: #4a33b4;
+    background: rgb(38, 144, 231);  
     text-align: center;
-    color: white;
+    color: white !important;
     font-weight: bold;
     text-transform: uppercase;
     border: none;
@@ -121,7 +122,7 @@
 }
 
 #colorChangeButton:hover {
-    background: #735bde;
+    background: rgb(38, 144, 231); 
 }
 
 

@@ -59,6 +59,7 @@ const MapPage = () => {
       setDuration(newValue);
     }
   };
+  
   const updateDistance = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
@@ -135,7 +136,6 @@ const MapPage = () => {
         const durationQueryParam = `duration_min=${duration[0]}&duration_max=${duration[1]}`;
         const distanceQueryParam = `distance_min=${distance[0]}&distance_max=${distance[1]}`;
         const queryParams = [durationQueryParam, distanceQueryParam].join('&');
-        console.log(`http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`)
         const url = `http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
         const response = await fetch(url, { mode: 'cors' });
         const data = await response.json();
