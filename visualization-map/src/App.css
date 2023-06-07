@@ -73,7 +73,7 @@
       0.3s border-top-color;
 }
 
-#dropdown:hover, #colorChangeSelect:hover, #buttonSwitch { 
+#dropdown:hover, #colorChangeSelect:hover, #buttonSwitch:hover { 
     background: rgb(38, 144, 231); 
 }
 #dropdown:hover:before, #colorChangeSelect:before { 
