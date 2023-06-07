@@ -22,7 +22,7 @@ const MapPage = () => {
   var mapZoom = 15;
   var mapCenter = [-23.513860, -46.597593];
   const minDistance = 10;
-  const minDuration = 10;
+  const minDuration = 0.5;
 
   // FUNCTIONS SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   
@@ -133,7 +133,7 @@ const MapPage = () => {
   useEffect(() => {
     const fetchPolylineData = async () => {
       try {
-        const durationQueryParam = `duration_min=${duration[0]}&duration_max=${duration[1]}`;
+        const durationQueryParam = `duration_min=${duration[0]*3600}&duration_max=${duration[1]*3600}`;
         const distanceQueryParam = `distance_min=${distance[0]}&distance_max=${distance[1]}`;
         const queryParams = [durationQueryParam, distanceQueryParam].join('&');
         const url = `http://localhost:5000/rota?${queryParams}${travelMode ? `&travel_mode=${travelMode}` : ''}`;
