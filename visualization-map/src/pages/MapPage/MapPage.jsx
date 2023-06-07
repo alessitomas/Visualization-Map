@@ -97,8 +97,8 @@ const MapPage = () => {
   
     function durationColor(duration) {
       var durationInSeconds = parseInt(duration.slice(0, -1));
-      var intensity = Math.min(Math.floor(durationInSeconds / 10), 255); // Ajuste o divisor conforme necessário
-      return `rgb(${(0)},${0},${intensity})`; 
+      var intensity = Math.min(Math.floor(durationInSeconds / 60), 255); // Ajuste o divisor conforme necessário
+      return `rgb(${20},${20},${255-intensity})`; 
     }
   
 
@@ -255,9 +255,9 @@ const MapPage = () => {
                 <option value="BICYCLE">Bicycle</option>
             </select>
             <select onChange={(e) => setColorOption(e.target.value)} id="colorChangeSelect">
-              <option value="curColor">curColor</option>
-              <option value="distColor">distColor</option>
-              <option value="timeColor">timeColor</option>
+              <option value="curColor">Random</option>
+              <option value="distColor">By Distance</option>
+              <option value="timeColor">By Time</option>
           </select>
             <div id="slider">
               <SliderFilters duration = {duration} distance={distance}  updateDuration={updateDuration} updateDistance={updateDistance} />
