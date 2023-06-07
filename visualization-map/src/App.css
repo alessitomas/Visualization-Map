@@ -46,7 +46,7 @@
 
 /* --------------------------------------- */
 
-#dropdown, #colorChangeSelect {
+#dropdown, #colorChangeSelect, #buttonSwitch {
     display: block;
     height: 2rem;
     background: rgb(24, 117, 210);
@@ -73,7 +73,7 @@
       0.3s border-top-color;
 }
 
-#dropdown:hover, #colorChangeSelect:hover { 
+#dropdown:hover, #colorChangeSelect:hover, #buttonSwitch { 
     background: rgb(38, 144, 231); 
 }
 #dropdown:hover:before, #colorChangeSelect:before { 

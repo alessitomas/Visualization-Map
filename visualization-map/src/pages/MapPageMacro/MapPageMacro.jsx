@@ -9,11 +9,12 @@ import "leaflet-polylinedecorator";
 import L, { PolylineDecorator } from "leaflet";
 
 
-const MapPage = () => {
+const MapPageMacro = () => {
   const [poly, setPoly] = useState([]);
   const [popupInfo, setPopupInfo] = useState(null);
   const [gon, setGon] = useState([]);
   const [markers, setMarkers] = useState([]);
+  const [macro, setMacro] = useState([]); 
   const [duration, setDuration] = React.useState([0, 5000]);
   const [distance, setDistance] = React.useState([0, 50000]);
   const [travelMode, setTravelMode] = useState(null);
@@ -28,7 +29,7 @@ const MapPage = () => {
   // FUNCTIONS SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
   function handleClickDiffPage() {
-    navigate("/mapmacro");
+    navigate("/map");
   } 
   
   function PolylineDecorator({ patterns, polyline, choisedColor }) {
@@ -123,6 +124,19 @@ const MapPage = () => {
   }, []);
 
   useEffect(() => {
+    const fetchMacroData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/macro', { mode: 'cors' });
+        const data = await response.json();
+        setMacro(data.routes);
+      } catch (error) {
+        console.error('Error fetching macro data:', error);
+      }
+    };
+    fetchMacroData();
+  }, []);
+
+  useEffect(() => {
     const fetchPolylineData = async () => {
       try {
         const durationQueryParam = `duration_min=${duration[0]*3600}&duration_max=${duration[1]*3600}`;
@@ -212,6 +226,28 @@ const MapPage = () => {
     }}/>);
   }), [gon]);
 
+  const polylinesMacro = useMemo(() => macro.map((rota) => {
+    var seed = rota.id;
+    var curColor = `rgb(${Math.floor(random(seed) * 255 )},${Math.floor(random(seed+1) * 255)},${Math.floor(random(seed-1) * 255)})`;
+    const newPos = rota.route.map(coord => [coord[1], coord[0]]);
+    const arrow = [
+      {
+        offset: "10%",
+        repeat: "20%",
+        symbol: L.Symbol.arrowHead({
+        
+          pixelSize: 20,
+          polygon: false,
+          pathOptions: { stroke: true , color: curColor}
+        })
+      }
+    ];
+    return (
+      
+      <PolylineDecorator patterns={arrow} polyline={newPos} choisedColor={curColor} />
+    );
+  }), [macro]);
+
 // PAGE PRESENTATION SECTION -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
   return (
@@ -221,7 +257,7 @@ const MapPage = () => {
             <button
               className="image-button" id="buttonSwitch"
               onClick={handleClickDiffPage}
-            >Ativar Macros</button>
+            >Desativar Macros</button>
             <select onChange={e => setTravelMode(e.target.value)} id="dropdown">
                 <option value="">All</option>
                 <option value="WALK">Walk</option>
@@ -279,6 +315,13 @@ const MapPage = () => {
                   </LayerGroup>
                 </LayersControl.Overlay>
 
+                <LayersControl.Overlay checked name="Macro Rotas">  
+                    <LayerGroup>
+                      {polylinesMacro}
+                    </LayerGroup>
+                </LayersControl.Overlay>
+
+
                 </LayersControl>
                 </MapContainer>
             </div>
@@ -288,4 +331,4 @@ const MapPage = () => {
   );
 };
 
-export default MapPage;
+export default MapPageMacro;
