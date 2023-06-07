@@ -1,10 +1,13 @@
 import React from 'react';
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup } from 'react-leaflet';
+import { MapContainer, useMap, TileLayer, Polyline, Popup, Polygon, Marker, LayersControl, LayerGroup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import polyline from '@mapbox/polyline';
 import SliderFilters from '../../components/SliderFilters';
-
+import * as L from 'leaflet';
+import * as helpers from "@turf/helpers";
+import { default as bezierSpline } from "@turf/bezier-spline";
+import  "leaflet-polylinedecorator"
 
 const MapPage = () => {
   const [poly, setPoly] = useState([]);
@@ -21,6 +24,15 @@ const MapPage = () => {
 
   const minDistance = 10;
   const minDuration = 10;
+
+  function buildSpline(coords) {
+    const line = helpers.lineString(
+      coords.map((lngLat) => [lngLat[1], lngLat[0]])
+    );
+    return bezierSpline(line);
+  }
+
+
   const UpdateDuration = (event, newValue, activeThumb) => {
     if (!Array.isArray(newValue)) {
       return;
@@ -156,20 +168,55 @@ const MapPage = () => {
     return <Polygon key={area.name} pathOptions={{ color: 'white', opacity:0.5, fillColor:'black', fillOpacity:0.25, weight:2  }} positions={positions} />;
   }), [gon]);
 
+  // const polylinesMacro = useMemo(() => macro.map((rota) => {
+  //   var curColor = generateColor(rota.people+2);
+  //   const newPos = rota.route.map(coord => [coord[1], coord[0]]);
+
+  //   return (
+      
+  //     <Polyline
+  //       key={rota.name} map
+  //       pathOptions={{ color: curColor }}
+  //       positions={ newPos}
+  //     />
+  //   );
+  // }), [macro]);
+
   const polylinesMacro = useMemo(() => macro.map((rota) => {
     var curColor = generateColor(rota.people+2);
-    const newPos = rota.route.map(coord => [coord[1], coord[0]]);
+    // const newPos = rota.route.map(coord => [coord[1], coord[0]]);
+    let newPos = [
+      [
+        -23.602105444274102,
+        -46.68535939870177,
+    ],
+    [ -22,-46 ],
+    [
+        -23.58650343892533,
+        -46.635799002212465,
+    ]
+    ];
+    const curvedRoute = buildSpline(newPos); // Apply curve to the route
 
     return (
-      
-      <Polyline
-        key={rota.name} map
-        pathOptions={{ color: curColor }}
-        positions={ newPos}
+      <GeoJSON
+        // key={rota.name} 
+        // pathOptions={{ color: curColor }}
+        key={rota.name}
+        onEachFeature={handleEachFeature}
+        data={ curvedRoute.geometry.coordinates.map(coord => [coord[1], coord[0]]) } // Convert back to [lat, lng] format
+        // onEachFeature={handleEachFeature} // Add arrow decorators
       />
     );
   }), [macro]);
 
+  function handleEachFeature(feature, layer){
+    L.polylineDecorator(layer, {
+      patterns: [
+        {offset: '10%', repeat: '80%',  symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0}})}
+      ]
+    }).addTo(mapRef.current); 
+  }
 
 
   return (
