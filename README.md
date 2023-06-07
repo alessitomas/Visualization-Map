@@ -29,9 +29,9 @@ Construímos o backend em Flask e o frontend usando React e CSS. Como banco de d
     - Landing page
     - Descreve o projeto de forma sucinta, e possuí um botão para ir para a página do mapa
 - /map
-    - Pagina principal
+    - Página principal
     - Mapa interativo
-        - Filtros no topo direito para visualizar/esconder áreas, rotas, macro-rotas e marcações
+        - Filtros no topo direito para visualizar/esconder áreas, rotas e marcações
         - Zoom, com os botões do topo esquerdo ou scroll do mouse
         - Popups descritivos, com cliques do mouse
         - Arrastar o mapa, com um clique-e-arrasta do mouse
@@ -41,3 +41,6 @@ Construímos o backend em Flask e o frontend usando React e CSS. Como banco de d
     - Sliders
         - Filtrar as rotas por tempo, em horas, por uma quantidade mínima e máxima
         - Filtrar as rotas por tamanho, por uma distância mínima e máxima
+- /mapmacro
+   - Extenção da página principal
+   - Todas as funcionalidades, mas com a adição de macro-rotas
